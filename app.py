@@ -3,18 +3,32 @@ import sqlite3
 import os
 app = Flask(__name__)
 
+DATABASE = 'time.db'
 
 
 
+@app.route('/')
+def contents():
+    return render_template ("home.html")
 
+@app.route('/')
 def login():
+    return render_template("login.html")
+
+@app.route('/')
+def register():
+    return render_template("register.html")
+
+
+
+def login_function():
     while True:
         username = input("please insert your username: ")
         password = input("please insert your password: ")
         with sqlite3.connect("time.db") as db:
             cursor = db.cursor()
         find_user = ("SELECT * FROM Account WHERE Account =  ? AND Password = ?")
-        cursor.excecute(find_user,[(username), (password)])
+        cursor.execute(find_user,[(username), (password)])
         results = cursor.fetchall()
 
         if results:
@@ -31,38 +45,11 @@ def login():
 #                return("exit")
                 break
 
-login()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#login()
 
 
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+
