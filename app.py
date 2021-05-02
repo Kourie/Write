@@ -11,16 +11,16 @@ DATABASE = 'time.db'
 def contents():
     return render_template ("home.html")
 
-@app.route('/')
+@app.route('/login')
 def login():
     return render_template("login.html")
 
-@app.route('/')
+@app.route('/register')
 def register():
     return render_template("register.html")
 
 
-
+@app.route('/add', methods=["GET","Post"])
 def login_function():
     while True:
         username = input("please insert your username: ")
