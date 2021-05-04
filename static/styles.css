@@ -11,6 +11,29 @@ wrapper{
 
 */
 
+table {
+  font-family: Arial, Garamond, sans-serif, cursive;
+  border-collapse: collapse;
+  width: 100%;
+
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+
+}
+
+tr:nth-child(even) {
+
+  background-color: #b1b1b1;
+
+}
+
+
+
+
 .nav {
   overflow: hidden;
   background-color: #64585f;
