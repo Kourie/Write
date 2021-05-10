@@ -34,25 +34,25 @@ def register():
 
 @app.route('/add', methods=["GET","Post"])
 def login_function():
-    while True:
-        cursor = get_db().cursor()
-        username = input("please insert your username: ")
-        password = input("please insert your password: ")
-        find_user = ("SELECT * FROM Account WHERE Account =  ? AND Password = ?")
-        cursor.execute(find_user,[(username), (password)])
-        results = cursor.fetchall()
+    cursor = get_db().cursor()
+    username = ("please insert your username: ")
+    password = ("please insert your password: ")
+    find_user = ("SELECT * FROM Account WHERE user_id =  ? AND password = ?")
+    cursor.execute(find_user,[(username), (password)])
+    results = cursor.fetchall()
+    return render_template ("logged.html", results=results)
 
-        if results:
-            for i in results:
-                print ("welcome " +i[2])
-                return render_template ("home.html")
+#    if results:
+ #       for i in results:
+  #          print ("welcome " +i[2])
+   #         return render_template ("home.html")
 
-        else:
-            print ("account and/or passoword not found")
-            again = input("do you want to try again?")
-            if again.lower == "n":
-                print ("kay")
-                return render_template ("home.html")
+    #else:
+     #   print ("account and/or passoword not found")
+      #  again = input("do you want to try again?")
+       # if again.lower == "n":
+        #    print ("kay")
+         #   return render_template ("home.html")
 
 #login()
 
