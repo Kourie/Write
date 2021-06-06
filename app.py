@@ -1,9 +1,12 @@
-from flask import Flask, render_template, g, request, redirect
+from flask import Flask, render_template, g, request, redirect, flash, session, url_for
 import sqlite3
 import os
 app = Flask(__name__)
 
 DATABASE = 'time.db'
+
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+
 
 
 def get_db():
@@ -18,44 +21,84 @@ def close_connection(exception):
     if db is not None:
         db.close()
 
+@app.route('/home')
+def home():
+    if 'username' in session:
+        return f'Logged in as {session["username"]}'
+    results = 'You are not logged in'
+    return render_template("home.html", result=results)
 
-@app.route('/')
-def contents():
-    return render_template ("home.html")
+    
 
 @app.route('/login')
 def login():
     return render_template("login.html")
 
-@app.route('/register')
-def register():
+@app.route('/register', methods=["GET","Post"])
+def register_function():
+    if request.method == "POST":
+        cursor = get_db().cursor()
+        user_ID = request.form.get("username")
+        Email = request.form.get("Email")
+        password = request.form.get("password")
+        sql = ("INSERT INTO Account(user_ID,mail,password) VALUES (?,?,?)")
+        print (user_ID)
+        print (Email) 
+        print (password)
+
+        cursor.execute(sql,(user_ID,Email,password))
+        get_db().commit()
+        return redirect ("/login")
+
+
     return render_template("register.html")
 
 
-@app.route('/add', methods=["GET","Post"])
-def login_function():
+@app.route('/logged')
+def logged():
+    home()
     cursor = get_db().cursor()
-    username = ("please insert your username: ")
-    password = ("please insert your password: ")
-    find_user = ("SELECT * FROM Account WHERE user_id =  ? AND password = ?")
-    cursor.execute(find_user,[(username), (password)])
-    results = cursor.fetchall()
-    return render_template ("logged.html", results=results)
+    sql = ("SELECT * FROM Account WHERE user_id = (?)")
+    cursor.execute(sql,(session['username'],))
+    result=cursor.fetchall()
+    print (result)
+    
+    return render_template("logged.html", results=result)
 
-#    if results:
- #       for i in results:
-  #          print ("welcome " +i[2])
-   #         return render_template ("home.html")
+@app.route('/fail')
+def fail():
+    return render_template("fail.html")
 
-    #else:
-     #   print ("account and/or passoword not found")
-      #  again = input("do you want to try again?")
-       # if again.lower == "n":
-        #    print ("kay")
-         #   return render_template ("home.html")
 
-#login()
 
+@app.route('/find', methods=["GET","Post"])  #broken fail safe, 
+def login_function():
+    if request.method == "POST":
+       
+        cursor = get_db().cursor()
+        user_ID = request.form.get("username")
+        password = request.form.get("password")
+        find_user = ("SELECT * FROM Account WHERE (user_ID,password) = (?,?)")
+        cursor.execute(find_user,(user_ID, password))
+        results = cursor.fetchall()
+        
+        if len(results) > 0:
+             #he have a user in the database with the right password
+            session['username'] = request.form['username']
+            return redirect ("/logged")
+        
+        else:
+            flash ("error, check spelling and caps")
+            return redirect ("/login")
+            
+
+
+
+@app.route('/logout')
+def logout():
+    # remove the username from the session if it's there
+    session.pop('username', None)
+    return redirect(url_for('fail'))
 
 
 if __name__ == "__main__":
